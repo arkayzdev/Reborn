@@ -1,23 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
-import pprint
+import random
 
-url = f'https://free-proxy-list.net/'
-res = requests.get(url)
-soup = BeautifulSoup(res.text, 'html.parser')
+class Proxy:
+    def get_proxy():
+        url = f'https://free-proxy-list.net/'
+        res = requests.get(url)
+        soup = BeautifulSoup(res.text, 'html.parser')
 
-ips = soup.findAll('tr')
+        ips = soup.select('tbody > tr')[:-9]
 
-available_ips = []
+        available_ips = []
 
-for idx, ip in enumerate (ips):
-    https = ip.select('.hx')[0].getText()
-    if https == 'yes':
-        # print(len(ip))
-        for column, value in enumerate (ip):
-            print(value)
-            available_ips.append('ip': value[0])
-        break
+        for idx, row in enumerate(ips):
+            https = row.select_one('.hx').text
+            if https == 'yes':
+                available_ips.append({
+                    'ip': row.select_one('td:nth-of-type(1)').text,
+                    'port': row.select_one('td:nth-of-type(2)').text
+                })
+         
+        proxy = random.choice(available_ips)
+        return f"{proxy['ip']}:{proxy['port']}"
+   
+
+
+       
 
 
 
