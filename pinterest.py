@@ -13,7 +13,6 @@ class Scraper:
         proxy = Proxy.get_proxy()
         options.add_experimental_option("excludeSwitches", ["enable-logging"])
         options.add_argument(f'--proxy-server={proxy}')
-        # driver = webdriver.Chrome(executable_path='chromedriver.exe', options= options)
         driver = webdriver.Chrome(options=options)
         # driver.set_page_load_timeout(60)
         # try:
