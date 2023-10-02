@@ -1,8 +1,9 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
+from model.image import Image
 
 class PinterestService:
-    def search_parser(search: str, ):
+    def search_parser(self, search: str):
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=False)
             context = browser.new_context(viewport={"width": 1920, "height": 1080})
@@ -15,13 +16,13 @@ class PinterestService:
             
         return html
     
-    def get_links(html):
+    def get_links(self, html):
         div_links = html.select('a[href^="/pin/"]')
         img_links = [div_link.get('href') for div_link in div_links]
         
         return img_links
     
-    def link_parser(link):
+    def link_parser(self, link: str):
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=False)
             context = browser.new_context(viewport={"width": 1920, "height": 1080})
@@ -34,9 +35,15 @@ class PinterestService:
 
         return html
     
-    def get_img_src(html):
-        source = html.select('img[src^="https://i.pinimg.com/564x/"]').get('href') #https://www.crummy.com/software/BeautifulSoup/bs4/doc/#css-selectors-through-the-css-property
-        return source
+    def get_img_src(self, html):
+        image_src = html.select_one('img').get('src')
 
+        if "/736x/" in image_src:
+            image_src = image_src.replace("/736x/", "/originals/")
 
+        return image_src
+
+    def get_all_img(self, links: list):
+        all_img = [self.get_img_src(link) for link in links]
+        return all_img
 
