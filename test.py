@@ -12,9 +12,9 @@ with sync_playwright() as pw:
 
     html = BeautifulSoup(page.content(), 'html.parser')
 
-    div_img = html.select('h1')
+    div_img = html.find('div', attrs={"data-test-id": "creator-avatar"})
 
-    print(div_img)
+    print(div_img.a['href'])
 
     
 
