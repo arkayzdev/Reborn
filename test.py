@@ -7,14 +7,14 @@ with sync_playwright() as pw:
     context = browser.new_context(viewport={"width": 1920, "height": 1080})
     
     page = context.new_page()
-    page.goto(f"https://www.pinterest.fr/pin/379639443603815000/")  
+    page.goto(f"https://mn2.mkklcdnv6temp.com/img/tab_28/02/85/28/cc979885/vol3_chapter_44/1-o.jpg")  
     page.wait_for_selector("img")  
 
     html = BeautifulSoup(page.content(), 'html.parser')
 
-    div_img = html.find('div', attrs={"data-test-id": "creator-avatar"})
+    div_img = html.select_one('img').get('src')
 
-    print(div_img.a['href'])
+    print(div_img)
 
     
 

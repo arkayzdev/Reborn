@@ -3,14 +3,17 @@ from bs4 import BeautifulSoup
 from model.image import Image
 
 class PinterestService:
+    def __init__(self):
+        pass
+
     def search_parser(self, search: str):
-        """_summary_
+        """Function which research keywords or theme defined by the user on Pinterest, and parse the html page which contains images related to the input.
 
         Args:
             search (str): Pinterest research's keywords or theme (pokemon, anime, plane ...)
 
         Returns:
-            _type_: _description_
+            _type_: HTML Page
         """
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=False)
@@ -26,6 +29,14 @@ class PinterestService:
 
     
     def get_links(self, html):
+        """_summary_
+
+        Args:
+            html (_type_): HTML Page
+
+        Returns:
+            _type_: _description_
+        """
         div_links = html.select('a[href^="/pin/"]') 
         img_links = [div_link.get('href') for div_link in div_links]
         
