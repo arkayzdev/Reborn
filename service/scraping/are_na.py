@@ -21,7 +21,7 @@ class AreNaService:
         return html
     
 
-    def get_link(self, html):
+    def get_links(self, html):
         div_links = html.select('a[href^="/block/"]')
         img_links = [f"https://are.na{div_link.get('href')}" for div_link in div_links]
 
@@ -52,3 +52,4 @@ class AreNaService:
         all_img = [self.get_img_src(link) for link in links]
         return all_img
             
+    

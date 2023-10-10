@@ -77,7 +77,7 @@ class PinterestService:
         if "/736x/" in image_src:
             image_src = image_src.replace("/736x/", "/originals/")
 
-        return (image_src, image_src.get('alt'))
+        return {'source': image_src, 'title': image_src.get('alt')}
 
 
     def get_all_img(self, links: list) -> list:
@@ -89,7 +89,8 @@ class PinterestService:
         Returns:
             list: List of tuples with (image link, image title)
         """
-        all_img = [self.get_img_src(link) for link in links]
+        all_html = [self.link_parser(link) for link in links]
+        all_img = [self.get_img_src(html) for html in all_html]
         return all_img
     
 
