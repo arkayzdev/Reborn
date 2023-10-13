@@ -7,11 +7,10 @@ with sync_playwright() as pw:
 
         page = context.new_page()
 
-        page.goto(f"https://www.cosmos.so/manifesto")
+        page.goto(f"https://www.pinterest.fr/pin/985231162515990/")
 
         html = BeautifulSoup(page.content(), 'html.parser')
-
-        with open('text.txt', 'w', encoding='utf-8') as f:
-                f.write(html.get_text())
-        
                 
+        creator_div = html.find('div', attrs={"data-test-id": "official-user-attribution"})
+        user_tag = f"@{creator_div.a['href'].replace('/', '')}"
+        print(user_tag)

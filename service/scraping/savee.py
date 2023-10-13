@@ -1,5 +1,8 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
+from model.image import Image
+import threading
+import queue
 
 class SaveeItService:
     def __init__(self) -> None:
@@ -30,24 +33,20 @@ class SaveeItService:
             
             page = context.new_page()
 
-            connect(page)
+            self.connect(page)
             
-            page.goto(f"https://savee.it/{search}/")
+            page.goto(f"https://savee.it/search/?q={search}")
 
             page.wait_for_selector("img")  
-
-            search_box = page.locator('input[placeholder="Search new inspiration"]')
-            search_box.type(search, delay=100)
-            page.wait_for_timeout(2_000)
 
             html = BeautifulSoup(page.content(), 'html.parser')
             
         return html
     
 
-    def get_link(self, html):
+    def get_links(self, html):
         links = html.select('a[href^="/i/"]')
-        img_links = [div_link.get('href') for div_link in links]
+        img_links = [f"https://savee.it{div_link.get('href')}" for div_link in links]
 
         return img_links
     
@@ -65,11 +64,20 @@ class SaveeItService:
 
         return html
 
-    def get_img_src(self, html):
+    def get_img_info(self, html):
         imgs_links = html.select('img')
-        return (imgs_links[-1].get('src'), imgs_links[-1].get('alt'))
+
+        image_src = imgs_links[-1].get('src')
+        alt = imgs_links[-1].get('alt')
+
+        return {'source': image_src, 'alt': alt} 
     
+
     def get_all_img(self, links: list):
-        all_img = [self.get_img_src(link) for link in links]
+        all_img = []
+        for link in links:
+            html = self.link_parser(link)
+            img_info = self.get_img_info(html)
+            all_img.append(Image(img_info['alt'], link, img_info['source'], 'Savee', 'None', img_info['alt']))
         return all_img
             

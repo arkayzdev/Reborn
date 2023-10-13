@@ -5,5 +5,6 @@ class Image:
     title: str
     access_link: str
     img_link : str
-    source: str
+    site: str
     author: str
+    alt: str

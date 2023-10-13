@@ -35,8 +35,13 @@ class PinterestService:
         Returns:
             list: Pinterest images links' list
         """
+        links = []
         div_links = html.select('a[href^="/pin/"]') 
-        img_links = [f"https://pinterest.com{div_link.get('href')}" for div_link in div_links]
+        pins = [div_link.get('href') for div_link in div_links]
+        for pin in pins:
+            if not pin in links:
+                links.append(pin)
+        img_links = [f"https://pinterest.com{link}" for link in links]
         
         return img_links
     
@@ -63,7 +68,7 @@ class PinterestService:
         return html
     
 
-    def get_img_src(self, html) -> tuple:
+    def get_img_info(self, html) -> tuple:
         """Get the high quality image's link and title
 
         Args:
@@ -73,41 +78,12 @@ class PinterestService:
             tuple: Source/Link , Title
         """
         image_src = html.select_one('img').get('src')
+        alt = html.select_one('img').get('alt')
 
         if "/736x/" in image_src:
             image_src = image_src.replace("/736x/", "/originals/")
 
-        return {'source': image_src, 'title': image_src.get('alt')}
-
-
-    def get_all_img(self, links: list) -> list:
-        """Get all links and title of the list
-
-        Args:
-            links (list): _description_
-
-        Returns:
-            list: List of tuples with (image link, image title)
-        """
-        all_html = [self.link_parser(link) for link in links]
-        all_img = [self.get_img_src(html) for html in all_html]
-        return all_img
-    
-
-    def get_title(self, html) -> str:
-        """Get image page title defined by Pinterest's user
-
-        Args:
-            html (_type_): html page parsed with bs4
-
-        Returns:
-            str: title
-        """
-        title = html.select_one('h1').get_text()
-        if title:
-            return title
-        else:
-            return "None"
+        return {'source': image_src, 'alt': alt}    
 
 
     def get_user_tag(self, html) -> str:
@@ -119,5 +95,28 @@ class PinterestService:
         Returns:
            str: user tag
         """
-        creator_div = html.find('div', attrs={"data-test-id": "creator-avatar"})
-        return f"@{creator_div.a['href']}"
+        creator_div = html.find('div', attrs={"data-test-id": "official-user-attribution"})
+        if creator_div:
+            user_tag = f"@{creator_div.a['href'].replace('/', '')}"
+        else:
+            user_tag = "None"
+        return user_tag
+
+
+    def get_all_img(self, links: list) -> list:
+            """Get all informations needed for images
+
+            Args:
+                links (list): _description_
+
+            Returns:
+                list: List of "Images"
+            """
+            all_img = []
+            for link in links:
+                html = self.link_parser(link)
+                img_info = self.get_img_info(html)
+                author = self.get_user_tag(html)
+                all_img.append(Image('None', link, img_info['source'], 'Pinterest', author, img_info['alt']))
+
+            return all_img
