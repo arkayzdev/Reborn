@@ -141,10 +141,8 @@ class PinterestService:
                 q.put(link)
 
             num_threads = 10
-
             threads = [None] * num_threads
             results = [None] * num_threads 
-
             all_img = list()
 
             while not q.empty():
@@ -153,10 +151,8 @@ class PinterestService:
                         link = q.get()
                         threads[i] = threading.Thread(target=self.get_img_info, args=(link, results, i), daemon=True)
                         threads[i].start()
-              
                 for i in range(num_threads):
                     threads[i].join()
-
                 for result in results:
                     all_img.append(result)
                 
