@@ -64,7 +64,7 @@ class SaveeItService:
 
         return html
 
-    def get_img_info(self, html):
+    def get_img_src(self, html):
         imgs_links = html.select('img')
 
         image_src = imgs_links[-1].get('src')
@@ -73,11 +73,37 @@ class SaveeItService:
         return {'source': image_src, 'alt': alt} 
     
 
+    def get_img_info(self, link: str, result: None, index: int) -> Image:
+        html = self.link_parser(link)
+        img_info = self.get_img_src(html)
+        image = Image(img_info['alt'], link, img_info['source'], 'Savee', 'None', img_info['alt'])
+        result[index] = image
+
+
     def get_all_img(self, links: list):
-        all_img = []
+        q = queue.Queue()
         for link in links:
-            html = self.link_parser(link)
-            img_info = self.get_img_info(html)
-            all_img.append(Image(img_info['alt'], link, img_info['source'], 'Savee', 'None', img_info['alt']))
+            q.put(link)
+
+        num_threads = 10
+
+        threads = [None] * num_threads
+        results = [None] * num_threads 
+
+        all_img = list()
+
+        while not q.empty():
+            for i in range(num_threads):
+                if not q.empty():
+                    link = q.get()
+                    threads[i] = threading.Thread(target=self.get_img_info, args=(link, results, i), daemon=True)
+                    threads[i].start()
+            
+            for i in range(num_threads):
+                threads[i].join()
+
+            for result in results:
+                all_img.append(result)
+            
         return all_img
             

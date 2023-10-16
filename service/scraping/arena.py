@@ -1,6 +1,8 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from model.image import Image
+import queue
+import threading
 
 class AreNaService:
     def search_parser(self, search: str):
@@ -40,19 +42,47 @@ class AreNaService:
         return html
 
 
-    def get_img_info(self, html):
+    def get_img_source(self, html):
         image_src = html.select_one('a[href^="https://d2w9rnfcy7mm78.cloudfront.net/"]').get('href')
         title = html.select_one('img').get('title')
         
         return {'source': image_src, 'title': title}  
     
 
-    def get_all_img(self, links: list):
-        all_img = []
-        for link in links:
+    def get_img_info(self, link: str, result: None, index: int) -> Image:
             html = self.link_parser(link)
-            img_info = self.get_img_info(html)
-            all_img.append(Image(img_info['title'], link, img_info['source'], 'Are.na', 'None', 'None'))
+            img_info = self.get_img_source(html)
+            image = Image(img_info['title'], link, img_info['source'], 'Are.na', 'None', 'None')
+
+            result[index] = image
+
+
+    def get_all_img(self, links: list):
+        q = queue.Queue()
+        for link in links:
+            q.put(link)
+
+        num_threads = 10
+
+        threads = [None] * num_threads
+        results = [None] * num_threads 
+
+        all_img = list()
+
+        while not q.empty():
+            for i in range(num_threads):
+                if not q.empty():
+                    link = q.get()
+                    threads[i] = threading.Thread(target=self.get_img_info, args=(link, results, i), daemon=True)
+                    threads[i].start()
+            
+            for i in range(num_threads):
+                threads[i].join()
+
+            for result in results:
+                all_img.append(result)
+            
         return all_img
+       
             
     
