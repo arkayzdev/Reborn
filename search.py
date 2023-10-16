@@ -25,3 +25,5 @@ class SearchService:
         images =  savee.get_all_img(links)   
         return images
         
+test = SearchService()
+print(test.pinterest("gojo satoru"))

@@ -1,6 +1,8 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from model.image import Image
+import threading
+import queue
 
 class PinterestService:
     def search_parser(self, search: str):
@@ -41,6 +43,7 @@ class PinterestService:
         for pin in pins:
             if not pin in links:
                 links.append(pin)
+
         img_links = [f"https://pinterest.com{link}" for link in links]
         
         return img_links
@@ -61,14 +64,16 @@ class PinterestService:
             
             page = context.new_page()
             page.goto(link)  
-            page.wait_for_selector("img")  
+            # page.wait_for_selector("img")  
+            page.wait_for_timeout(5_000)
 
             html = BeautifulSoup(page.content(), 'html.parser')
 
         return html
+        
     
 
-    def get_img_info(self, html) -> tuple:
+    def get_img_src(self, html) -> tuple:
         """Get the high quality image's link and title
 
         Args:
@@ -103,6 +108,25 @@ class PinterestService:
         return user_tag
 
 
+    def get_img_info(self, link: str, result: None, index: int) -> Image:
+        """Get all informations needed for images
+
+        Args:
+            link (str): _description_
+            result (None): _description_
+            index (int): _description_
+
+        Returns:
+            Image: _description_
+        """
+        html = self.link_parser(link)
+        img_src = self.get_img_src(html)
+        author = self.get_user_tag(html)
+        image = Image('None', link, img_src['source'], 'Pinterest', author, img_src['alt'])
+        
+        result[index] = image
+        return
+
     def get_all_img(self, links: list) -> list:
             """Get all informations needed for images
 
@@ -112,11 +136,28 @@ class PinterestService:
             Returns:
                 list: List of "Images"
             """
-            all_img = []
+            q = queue.Queue()
             for link in links:
-                html = self.link_parser(link)
-                img_info = self.get_img_info(html)
-                author = self.get_user_tag(html)
-                all_img.append(Image('None', link, img_info['source'], 'Pinterest', author, img_info['alt']))
+                q.put(link)
 
+            num_threads = 10
+
+            threads = [None] * num_threads
+            results = [None] * num_threads 
+
+            all_img = list()
+
+            while not q.empty():
+                for i in range(num_threads):
+                    if not q.empty():
+                        link = q.get()
+                        threads[i] = threading.Thread(target=self.get_img_info, args=(link, results, i), daemon=True)
+                        threads[i].start()
+              
+                for i in range(num_threads):
+                    threads[i].join()
+
+                for result in results:
+                    all_img.append(result)
+                
             return all_img
