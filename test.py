@@ -14,3 +14,4 @@ with sync_playwright() as pw:
         creator_div = html.find('div', attrs={"data-test-id": "official-user-attribution"})
         user_tag = f"@{creator_div.a['href'].replace('/', '')}"
         print(user_tag)
+        a
