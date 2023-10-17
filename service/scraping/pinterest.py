@@ -64,8 +64,8 @@ class PinterestService:
             
             page = context.new_page()
             page.goto(link)  
-            # page.wait_for_selector("img")  
-            page.wait_for_timeout(5_000)
+            page.wait_for_selector("img")  
+            
 
             html = BeautifulSoup(page.content(), 'html.parser')
 
@@ -125,7 +125,8 @@ class PinterestService:
         image = Image('None', link, img_src['source'], 'Pinterest', author, img_src['alt'])
         
         result[index] = image
-        return
+        return image
+
 
     def get_all_img(self, links: list) -> list:
             """Get all informations needed for images
