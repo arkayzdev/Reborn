@@ -13,7 +13,7 @@ def index():
 def search():
     start_time = datetime.datetime.now()
     keyword = request.args.get('keyword')
-    # print(req_args)
+    
     research = SearchService()
     all_img = list()
 
@@ -21,8 +21,9 @@ def search():
     all_img.append(research.arena(keyword))
     all_img.append(research.savee(keyword))
     
-    time = datetime.datetime.now() - start_time
-    print(f"Temps : {time}, Nombre : {len(all_img[0]) + len(all_img[1]) + len(all_img[2])}")
+    treatment_time = datetime.datetime.now() - start_time
+    nb_links = len(all_img[0]) + len(all_img[1]) + len(all_img[2])
+    print(f"Temps : {treatment_time}, Nombre : {nb_links}")
     return all_img
 
 if __name__ == '__main__':
