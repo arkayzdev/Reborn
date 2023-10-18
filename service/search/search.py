@@ -21,7 +21,6 @@ class SearchService:
         savee = SaveeItService()
         research_page = savee.search_parser(search)
         links = savee.get_links(research_page)
-        print(links)
         images =  savee.get_all_img(links)   
         return images
         

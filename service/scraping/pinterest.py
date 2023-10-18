@@ -64,8 +64,7 @@ class PinterestService:
             
             page = context.new_page()
             page.goto(link)  
-            page.wait_for_selector("img")  
-            
+            page.wait_for_selector("[data-test-id=pin-closeup-image]")
 
             html = BeautifulSoup(page.content(), 'html.parser')
 
@@ -73,7 +72,7 @@ class PinterestService:
         
     
 
-    def get_img_src(self, html) -> tuple:
+    def get_img_src(self, html) -> dict:
         """Get the high quality image's link and title
 
         Args:
@@ -82,11 +81,20 @@ class PinterestService:
         Returns:
             tuple: Source/Link , Title
         """
-        image_src = html.select_one('img').get('src')
-        alt = html.select_one('img').get('alt')
+        # image_src = html.select_one('img').get('src')
+        # alt = html.select_one('img').get('alt')
+
+        image_div = html.find('div', attrs={"data-test-id": "pin-closeup-image"})
+        image_src = image_div.img.get('src')
+        alt = image_div.img.get('alt')
 
         if "/736x/" in image_src:
             image_src = image_src.replace("/736x/", "/originals/")
+
+        if "/564x/" in image_src:
+            image_src = image_src.replace("/736x", "/originals/")
+
+            
 
         return {'source': image_src, 'alt': alt}    
 
@@ -129,32 +137,33 @@ class PinterestService:
 
 
     def get_all_img(self, links: list) -> list:
-            """Get all informations needed for images
+        """Get all informations needed for images
 
-            Args:
-                links (list): _description_
+        Args:
+            links (list): _description_
 
-            Returns:
-                list: List of "Images"
-            """
-            q = queue.Queue()
-            for link in links:
-                q.put(link)
+        Returns:
+            list: List of "Images"
+        """
+        q = queue.Queue()
+        for link in links:
+            q.put(link)
 
-            num_threads = 10
-            threads = [None] * num_threads
-            results = [None] * num_threads 
-            all_img = list()
+        num_threads = 10
+        threads = [None] * num_threads
+        results = [None] * num_threads 
+        all_img = list()
 
-            while not q.empty():
-                for i in range(num_threads):
-                    if not q.empty():
-                        link = q.get()
-                        threads[i] = threading.Thread(target=self.get_img_info, args=(link, results, i), daemon=True)
-                        threads[i].start()
-                for i in range(num_threads):
-                    threads[i].join()
-                for result in results:
+        while not q.empty():
+            for i in range(num_threads):
+                if not q.empty():
+                    link = q.get()
+                    threads[i] = threading.Thread(target=self.get_img_info, args=(link, results, i), daemon=True)
+                    threads[i].start()
+            for i in range(num_threads):
+                threads[i].join()
+            for result in results:
+                if result:
                     all_img.append(result)
-                
-            return all_img
+            
+        return all_img
