@@ -1,14 +1,13 @@
-from service.scraping.pinterest import PinterestService
+from playwright.sync_api import sync_playwright
+from bs4 import BeautifulSoup
 
-pin = PinterestService()
-html = pin.link_parser("https://www.pinterest.fr/pin/61783826128938057/")
+with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        context = browser.new_context(viewport={"width": 1920, "height": 1080})
+        
+        page = context.new_page()
+        page.goto(f"https://pinterest.com/search/pins/?q=gojo")  
+        page.wait_for_selector("img")  
 
-# image_div = html.select("div > img")
-# src = image_div[4].get('src')
-
-div = html.find('div', attrs={"data-test-id": "pin-closeup-image"})
-# div = html.select("div")
-print(div.img.get('src'))
-
-# with open("div.html", "w", encoding="utf-8") as f:
-#         f.write(str(div))
+        html = BeautifulSoup(page.content(), 'html.parser')
+        print(html)

@@ -15,15 +15,12 @@ def search():
     keyword = request.args.get('keyword')
     
     research = SearchService()
-    all_img = list()
-
-    all_img.append(research.pinterest(keyword))
-    all_img.append(research.arena(keyword))
-    all_img.append(research.savee(keyword))
+    all_img = research.search(keyword)
     
     treatment_time = datetime.datetime.now() - start_time
     nb_links = len(all_img[0]) + len(all_img[1]) + len(all_img[2])
     print(f"Temps : {treatment_time}, Nombre : {nb_links}")
+    
     return all_img
 
 if __name__ == '__main__':
