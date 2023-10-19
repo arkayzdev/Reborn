@@ -1,7 +1,7 @@
-from service.scraping.arena import AreNaService 
-from service.scraping.pinterest import PinterestService 
-from service.scraping.savee import SaveeItService
-from service.scraping.scraping import ScrapingService 
+from service.scrape.arena import AreNaService 
+from service.scrape.pinterest import PinterestService 
+from service.scrape.savee import SaveeItService
+from service.scrape.scrape import ScrapeService 
 
 class SearchService:
     def __init__(self) -> None:
@@ -12,7 +12,7 @@ class SearchService:
         
     def search (self, search: str):
         all_img = list()
-        resource: ScrapingService
+        resource: ScrapeService
         for resource in self.resources:
             research_page = resource.search_parser(search)
             links = resource.get_links(research_page)

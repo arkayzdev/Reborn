@@ -23,6 +23,12 @@ def search():
     
     return all_img
 
+
+@app.route('/search/<website>', methods=['GET'])
+def searchOne(website):
+    req_args = request.view_args
+    print('req_args: ', req_args)
+    
 if __name__ == '__main__':
     app.run()
 

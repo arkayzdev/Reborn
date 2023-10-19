@@ -1,11 +1,11 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from model.image import Image
-from service.scraping.scraping import ScrapingService
+from service.scrape.scrape import ScrapeService
 import threading
 import queue
 
-class SaveeItService(ScrapingService):
+class SaveeItService(ScrapeService):
     def connect(self, page):
         page.goto(f"https://savee.it/login/")  
         page.wait_for_selector("input")  

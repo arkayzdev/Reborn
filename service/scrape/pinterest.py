@@ -1,11 +1,11 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from model.image import Image
-from service.scraping.scraping import ScrapingService
+from service.scrape.scrape import ScrapeService
 import threading
 import queue
 
-class PinterestService(ScrapingService):
+class PinterestService(ScrapeService):
     def search_parser(self, search: str):
         """Research keywords or theme defined by the user on Pinterest, 
         and parse the html page which contains images related to the input.

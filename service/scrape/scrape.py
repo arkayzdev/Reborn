@@ -1,4 +1,4 @@
-class ScrapingService:
+class ScrapeService:
     def search_parser(self, search: str):
         pass
 

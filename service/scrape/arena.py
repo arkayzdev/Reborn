@@ -1,11 +1,11 @@
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from model.image import Image
-from service.scraping.scraping import ScrapingService
+from service.scrape.scrape import ScrapeService
 import queue
 import threading
 
-class AreNaService(ScrapingService):
+class AreNaService(ScrapeService):
     def search_parser(self, search: str):
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
