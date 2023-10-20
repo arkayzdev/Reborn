@@ -43,7 +43,7 @@ class AreNaService(ScrapeService):
         return html
 
 
-    def get_img_source(self, html):
+    def get_img_src(self, html):
         image_src = html.select_one('a[href^="https://d2w9rnfcy7mm78.cloudfront.net/"]').get('href')
         title = html.select_one('img').get('title')
         
@@ -52,8 +52,9 @@ class AreNaService(ScrapeService):
 
     def get_img_info(self, link: str, result: None, index: int) -> Image:
             html = self.link_parser(link)
-            img_info = self.get_img_source(html)
-            image = Image(img_info['title'], link, img_info['source'], 'Are.na', 'None', 'None')
+            img_src = self.get_img_source(html)
+            img_format = img_src['source'].split(".")[-1]
+            image = Image(img_src['title'], link, img_src['source'], 'Are.na', 'None', 'None', img_format)
 
             result[index] = image
 

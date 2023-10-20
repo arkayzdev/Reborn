@@ -8,3 +8,4 @@ class Image:
     site: str
     author: str
     alt: str
+    format: str

@@ -67,14 +67,15 @@ class SaveeItService(ScrapeService):
 
         image_src = imgs_links[-1].get('src')
         alt = imgs_links[-1].get('alt')
-
+    
         return {'source': image_src, 'alt': alt} 
     
 
     def get_img_info(self, link: str, result: None, index: int) -> Image:
         html = self.link_parser(link)
-        img_info = self.get_img_src(html)
-        image = Image(img_info['alt'], link, img_info['source'], 'Savee', 'None', img_info['alt'])
+        img_src = self.get_img_src(html)
+        img_format = img_src['source'].split(".")[-1]
+        image = Image(img_src['alt'], link, img_src['source'], 'Savee', 'None', img_src['alt'], img_format)
         result[index] = image
 
 

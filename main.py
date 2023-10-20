@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from service.search.search import SearchService
+from service.download.download import download_all_img
 import datetime
 
 app = Flask(__name__)
@@ -36,6 +37,23 @@ def searchOne(website):
     
     treatment_time = datetime.datetime.now() - start_time
     nb_links = len(all_img[0])
+    print(f"Temps : {treatment_time}, Nombre : {nb_links}")
+    
+    return all_img
+
+
+@app.route('/download', methods=['GET'])
+def download():
+    start_time = datetime.datetime.now()
+    keyword = request.args.get('keyword')
+    
+    research = SearchService()
+    all_img = research.search_all(keyword)
+    download_all_img(all_img)
+
+
+    treatment_time = datetime.datetime.now() - start_time
+    nb_links = len(all_img[0]) + len(all_img[1]) + len(all_img[2])
     print(f"Temps : {treatment_time}, Nombre : {nb_links}")
     
     return all_img
