@@ -5,6 +5,9 @@ from service.scrape.scrape import ScrapeService
 
 class SearchService:
     def __init__(self) -> None:
+        self.pinterest = PinterestService()
+        self.arena = AreNaService()
+        self.savee = SaveeItService()
         self.resources = []
         self.resources.append(PinterestService())
         self.resources.append(AreNaService())
