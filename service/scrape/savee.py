@@ -75,6 +75,8 @@ class SaveeItService(ScrapeService):
         html = self.link_parser(link)
         img_src = self.get_img_src(html)
         img_format = img_src['source'].split(".")[-1]
+        if '?' in img_format:
+            img_format = img_format.split("?")[0]
         image = Image(img_src['alt'], link, img_src['source'], 'Savee', 'None', img_src['alt'], img_format)
         result[index] = image
 

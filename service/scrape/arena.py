@@ -52,8 +52,10 @@ class AreNaService(ScrapeService):
 
     def get_img_info(self, link: str, result: None, index: int) -> Image:
             html = self.link_parser(link)
-            img_src = self.get_img_source(html)
+            img_src = self.get_img_src(html)
             img_format = img_src['source'].split(".")[-1]
+            if '?' in img_format:
+                img_format = img_format.split("?")[0]
             image = Image(img_src['title'], link, img_src['source'], 'Are.na', 'None', 'None', img_format)
 
             result[index] = image

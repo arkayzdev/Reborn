@@ -49,7 +49,9 @@ def download():
     
     research = SearchService()
     all_img = research.search_all(keyword)
-    Download.download_all_img(all_img, keyword)
+
+    download = Download()
+    download.download_all_img(all_img, keyword)
 
 
     treatment_time = datetime.datetime.now() - start_time

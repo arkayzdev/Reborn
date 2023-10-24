@@ -132,6 +132,8 @@ class PinterestService(ScrapeService):
         img_src = self.get_img_src(html)
         author = self.get_user_tag(html)
         img_format = img_src['source'].split(".")[-1]
+        if '?' in img_format:
+            img_format = img_format.split("?")[0]
         image = Image('None', link, img_src['source'], 'Pinterest', author, img_src['alt'], img_format)
         
         result[index] = image
