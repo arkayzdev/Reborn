@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from service.search.search import SearchService
-from service.download.download import download_all_img
+from service.download.download import Download
 import datetime
 
 app = Flask(__name__)
@@ -49,7 +49,7 @@ def download():
     
     research = SearchService()
     all_img = research.search_all(keyword)
-    download_all_img(all_img)
+    Download.download_all_img(all_img, keyword)
 
 
     treatment_time = datetime.datetime.now() - start_time
