@@ -13,7 +13,7 @@ class Download:
         for website in imgs:
             for image in website:
                 img_url = image.img_link
-                path = f"src/download/img/{keyword}/"
+                path = f"resources/download/img/{keyword}/"
                 if not dir.directory_exists(path):
                     dir.create_directory(path)
                 img_name = f"img{index}"

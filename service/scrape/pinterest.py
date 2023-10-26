@@ -89,11 +89,11 @@ class PinterestService(ScrapeService):
         image_src = image_div.img.get('src')
         alt = image_div.img.get('alt')
 
-        if "/736x/" in image_src:
-            image_src = image_src.replace("/736x/", "/originals/")
+        # if "/736x/" in image_src:
+        #     image_src = image_src.replace("/736x/", "/originals/")
 
-        if "/564x/" in image_src:
-            image_src = image_src.replace("/736x", "/originals/")
+        # if "/564x/" in image_src:
+        #     image_src = image_src.replace("/564x/", "/originals/")
 
             
 
